@@ -4,6 +4,11 @@ let notifyUsers = async (users, notificationObject) => {
     }
 };
 
+let notifyUser = async (ws, notificationObject) => {
+    await ws.send(JSON.stringify(notificationObject));
+};
+
 module.exports = {
-    notifyUsers
+    notifyUsers,
+    notifyUser
 };

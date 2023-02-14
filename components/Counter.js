@@ -11,7 +11,7 @@ class Counter {
 
   setNewUser(ws) {
     const index = this.users.indexOf(ws);
-    if (index > -1) {
+    if (index == -1) {
         this.users = this.users.concat(ws);
     }
   }
