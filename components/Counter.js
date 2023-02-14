@@ -10,7 +10,10 @@ class Counter {
   }
 
   setNewUser(ws) {
-    this.users = this.users.concat(ws);
+    const index = this.users.indexOf(ws);
+    if (index > -1) {
+        this.users = this.users.concat(ws);
+    }
   }
 
   deleteUser(ws) {
