@@ -30,7 +30,7 @@ class Counter {
         this.lastLimit = this.limit;
         await notifyUsers(this.users, warningText('The counter has started'));
         this.counter = setInterval(async () => {
-            if (this.lastLimit <= 0) {
+            if (this.lastLimit < 0) {
                 await notifyUsers(this.users, warningText('The counter has ended'));
                 clearInterval(this.counter);
                 this.counter = null;
@@ -48,7 +48,7 @@ class Counter {
     } else {
         await notifyUsers(this.users, warningText('The counter has restarted'));
         this.counter = setInterval(async () => {
-            if (this.lastLimit <= 0) {
+            if (this.lastLimit < 0) {
                 await notifyUsers(this.users, warningText('The counter has ended'));
                 clearInterval(this.counter);
                 this.counter = null;
