@@ -1,3 +1,6 @@
+const { notifyUsers } = require("./Notifier");
+const { warningText, timerUpdate } = require("./ObjectNotifications");
+
 class Counter {
   constructor(limit) {
     this.limit = limit;
@@ -19,43 +22,39 @@ class Counter {
 
   async startCounter() {
     if (this.counter) {
-        console.log("Counter exists");
-        for (let i = 0; i < this.users.length; i++) {
-            await this.users[i].send('A counter is already running');
-        }
+        await notifyUsers(this.users, warningText('A counter is already existing'));
     } else {
         this.lastLimit = this.limit;
+        await notifyUsers(this.users, warningText('The counter has started'));
         this.counter = setInterval(async () => {
             if (this.lastLimit <= 0) {
-                for (let i = 0; i < this.users.length; i++) {
-                    this.users[i].send("The counter has ended");
-                }
+                await notifyUsers(this.users, warningText('The counter has ended'));
                 clearInterval(this.counter);
                 this.counter = null;
                 return;
             }
-            for (let i = 0; i < this.users.length; i++) {
-                await this.users[i].send(String(this.lastLimit));
-            }
+            await notifyUsers(this.users, timerUpdate(this.lastLimit));
             this.lastLimit = this.lastLimit - 1;
         }, 1000);
     }
   }
 
-  continueCounter() {
-    this.counter = setInterval(async () => {
-        if (this.lastLimit <= 0) {
-            for (let i = 0; i < this.users.length; i++) {
-                await this.users[i].send("The counter has ended");
+  async continueCounter() {
+    if (this.lastLimit == 0) {
+        await notifyUsers(this.users, warningText('The counter is not running'));
+    } else {
+        await notifyUsers(this.users, warningText('The counter has restarted'));
+        this.counter = setInterval(async () => {
+            if (this.lastLimit <= 0) {
+                await notifyUsers(this.users, warningText('The counter has ended'));
+                clearInterval(this.counter);
+                this.counter = null;
+                return;
             }
-            clearInterval(this.counter);
-            return;
-        }
-        for (let i = 0; i < this.users.length; i++) {
-            await this.users[i].send(String(this.lastLimit));
-        }
-        this.lastLimit = this.lastLimit - 1;
-    }, 1000);
+            await notifyUsers(this.users, timerUpdate(this.lastLimit));
+            this.lastLimit = this.lastLimit - 1;
+        }, 1000);
+    }
   }
 
   stopCounter() {
